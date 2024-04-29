@@ -60,8 +60,8 @@ func NewClientFromHttpClient(appId, mchId, apiKey string, isProd bool, httpClien
 //	bm：请求参数的BodyMap
 //	path：接口地址去掉baseURL的path，例如：url为https://api.mch.weixin.qq.com/pay/micropay，只需传 pay/micropay
 //	tlsConfig：tls配置，如无需证书请求，传nil
-func (w *Client) PostWeChatAPISelf(bm gopay.BodyMap, path string, tlsConfig *tls.Config) (bs []byte, url string, statusCode int, header http.Header, err error) {
-	return w.doProdPost(context.Background(), bm, path, tlsConfig)
+func (w *Client) PostWeChatAPISelf(ctx context.Context, bm gopay.BodyMap, path string, tlsConfig *tls.Config) (bs []byte, url string, statusCode int, header http.Header, err error) {
+	return w.doProdPost(ctx, bm, path, tlsConfig)
 }
 
 // 授权码查询openid（正式）
