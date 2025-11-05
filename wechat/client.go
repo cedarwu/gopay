@@ -218,9 +218,6 @@ func (w *Client) doSanBoxPost(ctx context.Context, bm gopay.BodyMap, path string
 	if res.StatusCode != 200 {
 		return nil, url, res.StatusCode, res.Header, fmt.Errorf("HTTP Request Error, StatusCode = %d", res.StatusCode)
 	}
-	if strings.Contains(string(bs), "HTML") || strings.Contains(string(bs), "html") {
-		return nil, url, res.StatusCode, res.Header, errors.New(string(bs))
-	}
 	return bs, url, res.StatusCode, res.Header, nil
 }
 
@@ -263,9 +260,6 @@ func (w *Client) doProdPost(ctx context.Context, bm gopay.BodyMap, path string, 
 	if res.StatusCode != 200 {
 		return nil, url, res.StatusCode, res.Header, fmt.Errorf("HTTP Request Error, StatusCode = %d", res.StatusCode)
 	}
-	if strings.Contains(string(bs), "HTML") || strings.Contains(string(bs), "html") {
-		return nil, url, res.StatusCode, res.Header, errors.New(string(bs))
-	}
 	return bs, url, res.StatusCode, res.Header, nil
 }
 
@@ -291,9 +285,6 @@ func (w *Client) doProdPostPure(ctx context.Context, bm gopay.BodyMap, path stri
 	}
 	if res.StatusCode != 200 {
 		return nil, res.Header, fmt.Errorf("HTTP Request Error, StatusCode = %d", res.StatusCode)
-	}
-	if strings.Contains(string(bs), "HTML") || strings.Contains(string(bs), "html") {
-		return nil, res.Header, errors.New(string(bs))
 	}
 	return bs, res.Header, nil
 }
@@ -328,9 +319,6 @@ func (w *Client) doProdGet(ctx context.Context, bm gopay.BodyMap, path, signType
 	}
 	if res.StatusCode != 200 {
 		return nil, res.Header, fmt.Errorf("HTTP Request Error, StatusCode = %d", res.StatusCode)
-	}
-	if strings.Contains(string(bs), "HTML") || strings.Contains(string(bs), "html") {
-		return nil, res.Header, errors.New(string(bs))
 	}
 	return bs, res.Header, nil
 }
