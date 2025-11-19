@@ -75,6 +75,7 @@ func (w *Client) PostWeChatAPIPure(ctx context.Context, body []byte, url string,
 			return nil, 0, nil, err
 		}
 
+		bm.Remove("sign")
 		sign := GetReleaseSign(w.ApiKey, bm.GetString("sign_type"), bm)
 		body = bytes.Replace(body, []byte("[sign]"), []byte(sign), 1)
 	}
