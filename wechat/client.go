@@ -1,6 +1,7 @@
 package wechat
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"encoding/xml"
@@ -62,6 +63,41 @@ func NewClientFromHttpClient(appId, mchId, apiKey string, isProd bool, httpClien
 //	tlsConfig：tls配置，如无需证书请求，传nil
 func (w *Client) PostWeChatAPISelf(ctx context.Context, bm gopay.BodyMap, path string, tlsConfig *tls.Config) (bs []byte, url string, statusCode int, header http.Header, err error) {
 	return w.doProdPost(ctx, bm, path, tlsConfig)
+}
+
+func (w *Client) PostWeChatAPIPure(ctx context.Context, body []byte, url string, tlsConfig *tls.Config) (bs []byte, statusCode int, header http.Header, err error) {
+	if bytes.Contains(body, []byte("[sign]")) {
+		// 需补充签名参数
+		bm := make(gopay.BodyMap)
+		err = xml.Unmarshal(body, &bm)
+		if err != nil {
+			err = fmt.Errorf("xml parse err: %v", err)
+			return nil, 0, nil, err
+		}
+
+		sign := GetReleaseSign(w.ApiKey, bm.GetString("sign_type"), bm)
+		body = bytes.Replace(body, []byte("[sign]"), []byte(sign), 1)
+	}
+
+	httpClient := xhttp.NewClientFromHttpClient(ctx, w.HttpClient)
+	if w.IsProd && tlsConfig != nil {
+		httpClient.SetTLSConfig(tlsConfig)
+	}
+
+	if w.DebugSwitch == gopay.DebugOn {
+		xlog.Debugf("Wechat_Request: %s", body)
+	}
+	res, bs, errs := httpClient.Type(xhttp.TypeXML).Post(url).SendString(string(body)).EndBytes()
+	if len(errs) > 0 {
+		return nil, 0, nil, errs[0]
+	}
+	if w.DebugSwitch == gopay.DebugOn {
+		xlog.Debugf("Wechat_Response: %s%d %s%s", xlog.Red, res.StatusCode, xlog.Reset, string(bs))
+	}
+	if res.StatusCode != 200 {
+		return nil, res.StatusCode, res.Header, fmt.Errorf("HTTP Request Error, StatusCode = %d", res.StatusCode)
+	}
+	return bs, res.StatusCode, res.Header, nil
 }
 
 // 授权码查询openid（正式）
