@@ -95,9 +95,6 @@ func (w *Client) PostWeChatAPIPure(ctx context.Context, body []byte, url string,
 	if w.DebugSwitch == gopay.DebugOn {
 		xlog.Debugf("Wechat_Response: %s%d %s%s", xlog.Red, res.StatusCode, xlog.Reset, string(bs))
 	}
-	if res.StatusCode != 200 {
-		return nil, res.StatusCode, res.Header, fmt.Errorf("HTTP Request Error, StatusCode = %d", res.StatusCode)
-	}
 	return bs, res.StatusCode, res.Header, nil
 }
 
