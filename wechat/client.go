@@ -292,7 +292,7 @@ func (w *Client) doProdPost(ctx context.Context, bm gopay.BodyMap, path string, 
 		xlog.Debugf("Wechat_Response: %s%d %s%s", xlog.Red, res.StatusCode, xlog.Reset, string(bs))
 	}
 	if res.StatusCode != 200 {
-		return nil, url, res.StatusCode, res.Header, fmt.Errorf("HTTP Request Error, StatusCode = %d", res.StatusCode)
+		return bs, url, res.StatusCode, res.Header, fmt.Errorf("HTTP Request Error, StatusCode = %d", res.StatusCode)
 	}
 	return bs, url, res.StatusCode, res.Header, nil
 }
